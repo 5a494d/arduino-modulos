@@ -1,11 +1,12 @@
 /**
   @file modulo_ultrasonico
-  @brief Ejemplo de uso del modulo ultrasonico
+  @brief Ejemplo de uso del modulo ultrasonico HC-SR04
   
-  Con este modulo podremos leer la  disntacia de objetos en centimetros hasta un rango de 4m
+  Con este modulo podremos leer la  distancia un objeto que se encuentre en un rango de hasta 4m. La configuracion de pines:
   
   VCC  -> (+)
-  DATA -> (pin digital) 
+  Trig -> (pin digital)
+  Echo -> (pin digital)
   GND  -> (-)
 
   @author SCESI
@@ -13,49 +14,79 @@
 
 */
 
-/*
- HC-SR04 Ping distance sensor:
- VCC to arduino 5v 
- GND to arduino GND
- Echo to Arduino pin 9 
- Trig to Arduino pin 11 
- */
 
+/**
+  @brief Variables de configuracion del dispositov y variables de salida
 
-// pin del eco
-#define echoPin 3 // Echo Pin
+  @param echoPin  pin digital que resolvera el eco
+  @param trigPin  pin digital que realizara el disparo del pulso sonico
+  @param duracion respuesta del echo
+  @param distancia_cm distancia calculada segun la duracion del eco en centimetros
+  @param distancia_inch distancia calculada segun la duracion del eco en plugadas
 
-//pin del disparador
-#define trigPin 2 // Trigger Pin
+  */
 
+#define echoPin 3
+#define trigPin 2 
 
-long duracion, distancia_cm, distancia_inch; // Duration used to calculate distance
+long duracion;
+long distancia_cm;
+long distancia_inch; 
 
-void setup() {
- Serial.begin (9600);
- pinMode(trigPin, OUTPUT); // pin como salida
- pinMode(echoPin, INPUT); // pin como entrada
- digitalWrite(trigPin, LOW);  // apagado de forma logica
+void setup() 
+{
+  Serial.begin (9600);
+  // pin para trabajar como salida
+  pinMode(trigPin, OUTPUT); 
+  // pin para trabajar como entrada
+  pinMode(echoPin, INPUT); 
 }
 
 void loop() {
+  // pin con apagado logico
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10); 
+  digitalWrite(trigPin, LOW);
+ 
+  // devuelve la logitud del eco en us
+  duracion = pulseIn(echoPin, HIGH);
+  distancia_cm = microsegundosTransformarCentimetros(duracion);
+  distancia_inch = microsegundosTransformarPulgadas(duracion);
+ 
+  Serial.print("cm: ");
+  Serial.print(distancia_cm);
+  Serial.print(" inch: ");
+  Serial.print(distancia_inch);
+  Serial.print(" eco: ");
+  Serial.println(duracion);
+ 
+  // tiempo minimo de espera para que el eco se disipe 50ms
+  // puede ser modificado
+  delay(50);
+}
 
- delayMicroseconds(2); 
- 
- digitalWrite(trigPin, HIGH);
- delayMicroseconds(10); 
- digitalWrite(trigPin, LOW);
- 
- 
- // devuelve la logitud del pulso del pin en us
- duration = pulseIn(echoPin, HIGH);
- 
- microsecondsToInches()
- 
- //Calculate the distance (in cm) based on the speed of sound.
- distance = duration/58.2;
- Serial.print("distancia   ");
- Serial.println(distance);
- delay(50);
+/**
+  @brief transformar microsegundos a pulgadas
+  
+  @param microsegundos valor del echo transcurrido
+  @returns  valor convertido en pulgadas
+*/
+long microsegundosTransformarPulgadas(long microsegundos) 
+{ 
+  return microsegundos/148; 
+}
+
+/**
+  @brief transformar microsegundos a centimetros
+  
+  @param microsegundos valor del echo transcurrido
+  @returns  valor convertido en centimetros
+*/
+long microsegundosTransformarCentimetros(long microsegundos) 
+{ 
+  return microsegundos/58.2; 
 }
 
