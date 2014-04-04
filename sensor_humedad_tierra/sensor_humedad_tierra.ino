@@ -1,13 +1,19 @@
 /**
-  @file modulo_ultrasonico
-  @brief Ejemplo de uso del modulo ultrasonico HC-SR04
+  @file sensor_humedad_tierra.ino
+  @brief Ejemplo de uso del sensor de humedad de tierra con la version YL-38
   
-  Con este modulo podremos leer la  distancia un objeto que se encuentre en un rango de hasta 4m. La configuracion de pines:
+  Con este modulo podremos leer la temperatura actual de la tierra al en unn rango de 2m aproximadamente.Los valores de lectura son de: 
+  
+  1. 0  -300     Seco 
+  2. 300-700     Húmedo
+  3. 700-950     En Agua
+  
+  La distribucion de pines para el YL-38 es:
   
   VCC  -> (+)
-  Trig -> (pin digital)
-  Echo -> (pin digital)
   GND  -> (-)
+  D0   -> (pin digital)
+  A0   -> (pin digital)
 
   @author SCESI
   @date 04/2014
@@ -16,61 +22,48 @@
 
 
 /**
-  @brief Variables de configuracion del dispositov y variables de salida
+  @brief Valores de configuracion para la lectura de datos
 
-  @param echoPin  pin digital que resolvera el eco
-  @param trigPin  pin digital que realizara el disparo del pulso sonico
-  @param duracion respuesta del echo
-  @param distancia_cm distancia calculada segun la duracion del eco en centimetros
-  @param distancia_inch distancia calculada segun la duracion del eco en plugadas
+  @param salida_a  pin analogico que lee la humedad relativa
+  @param salida_d  pin analogico que se establece para realizar la diferencia
 
-  */
+ */
 
+#define DATO_A 2
+#define DATO_D 3
 
-// Sensor de Humedad   
-      
-// Conectamos el sensor de la siguiente forma:      
-// GND    -> GND      
-// VCC    -> 5V      
-// DAT    -> A0    
-// Por ejemplo conectamos a las entrada Analógica 0      
-// http://arubia45.blogspot.com.es/     
-
-
-// Descripción de valores del Sensor
-
-// 0  -300     Seco 
-// 300-700     Húmedo
-// 700-950     En Agua
-
-int Valor;
-int Val;
+int salida_a;
+int salida_d;
 
 void setup(){
   Serial.begin(9600);
-  //Serial.println("http://arubia45.blogspot.com.es");
+  Serial.println(" - iniciando sensor de humedad");
 }
 
-   void loop(){
-      Serial.print("Sensor de Humedad valor:");
-      Valor = map(analogRead(0),0,1024,1024,0);
-      Val = map(analogRead(0),0,1024,1024,0);
-      Serial.print("Valor uno: ");
-      Serial.println(Valor);
-      Serial.print("Valor dos: ");
-      Serial.println(Val);
-      
-      if (Valor <= 300)
-        Serial.println(" Seco, necesitas regar");
-      if ((Valor > 300) and (Valor <= 700))
-        Serial.println(" Humedo, no regar");
-      if (Valor > 700)
-        Serial.println(" Encharcado");
-      delay(1000);
-   }
-
-
-
-
-
-
+void loop(){
+  Serial.print("Sensor de Humedad valor:");
+  salida_a = map(analogRead(DATO_A),0,1024,1024,0);
+  salida_d = map(analogRead(DATO_D ),0,1024,1024,0);
+  Serial.print("Valor  a:");
+  Serial.print(salida_a);
+  Serial.print(" d:");
+  Serial.println(salida_d);
+  
+  Serial.print(" - estado: ");    
+  if (salida_a <= 300)
+  {
+    Serial.println("seco, necesitas regar");
+  }
+  
+  if ((salida_a > 300) and (salida_a <= 700))
+  {  
+    Serial.println("humedo, no regar");
+  }
+  
+  if (salida_a > 700)
+  {  
+    Serial.println(" muy remojado, te pasaste");    
+  }
+  
+  delay(1000);
+}

@@ -16,7 +16,7 @@
 
 
 /**
-  @brief Variables de configuracion del dispositov y variables de salida
+  @brief Variables de configuracion del dispositivo y variables de salida
 
   @param echoPin  pin digital que resolvera el eco
   @param trigPin  pin digital que realizara el disparo del pulso sonico
