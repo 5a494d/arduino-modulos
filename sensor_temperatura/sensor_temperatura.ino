@@ -20,6 +20,8 @@
   @param Establece el pin digital que recibira los datos
   @param Nombre del modelo que se esta conectando DHT11 o DHT22
   
+  @returns Objeto para el manejo del modulo
+  
   */
 DHT dht(2, DHT11); 
 
